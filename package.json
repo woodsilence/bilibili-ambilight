@@ -1,6 +1,6 @@
 {
   "name": "bilibili-ambilight",
-  "version": "2.38.17",
+  "version": "0.0.1",
   "description": "This browser extension adds ambient light to the videos you view on Bilibili",
   "repository": {
     "type": "git",
@@ -19,13 +19,13 @@
     "build:styles:options": "copyfiles -u 2 src/styles/options.css dist/styles",
     "build:styles": "run-p build:styles:content build:styles:live-chat build:styles:options",
     "build:scripts:rollup": "rollup -c",
-    "build:scripts:sourcemaps:inject": "sentry-cli sourcemaps inject ./dist/scripts --release=2.38.17",
+    "build:scripts:sourcemaps:inject": "sentry-cli sourcemaps inject ./dist/scripts --release=0.0.1",
     "build:scripts:sourcemaps:copy": "node sourcemaps-copy.js",
     "build:scripts:sourcemaps": "run-s build:scripts:sourcemaps:inject build:scripts:sourcemaps:copy",
     "build:scripts": "run-s build:scripts:rollup build:scripts:sourcemaps",
     "build": "run-s build:scripts build:styles build:manifest build:html build:images",
     "pack": "node pack.js",
-    "upload-sourcemaps": "dotenvx run -f .env -f .env.local --overload -- sentry-cli sourcemaps upload ./sourcemaps --release=2.38.17"
+    "upload-sourcemaps": "dotenvx run -f .env -f .env.local --overload -- sentry-cli sourcemaps upload ./sourcemaps --release=0.0.1"
   },
   "engines": {
     "node": "22.5.1"

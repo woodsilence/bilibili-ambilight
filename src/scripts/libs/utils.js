@@ -66,14 +66,6 @@ export const getFeedbackFormLink = (version) => {
   return `https://docs.google.com/forms/d/e/1FAIpQLSe5lenJCbDFgJKwYuK_7U_s5wN3D78CEP5LYf2lghWwoE9IyA/viewform?usp=pp_url&entry.1590539866=${version}&entry.1676661118=${os}&entry.964326861=${browser}&entry.908541589=${browserVersion}`;
 };
 
-const privacyPolicyLinks = {
-  Firefox:
-    'https://addons.mozilla.org/firefox/addon/youtube-ambientlight/privacy/',
-};
 export const getPrivacyPolicyLink = () => {
-  const browser = getBrowser();
-  return (
-    privacyPolicyLinks[browser] ||
-    'https://github.com/WesselKroos/youtube-ambilight#privacy--security'
-  );
+  return 'https://github.com/woodsilence/bilibili-ambilight#privacy--security';
 };

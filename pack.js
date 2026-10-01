@@ -7,7 +7,7 @@ const rootDir = process.cwd();
 const distDir = path.join(rootDir, 'dist');
 const releasesDir = path.join(rootDir, 'releases');
 const pkg = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf-8'));
-const version = pkg.version || '2.38';
+const version = pkg.version || '0.0.1';
 
 if (!fs.existsSync(releasesDir)) {
   fs.mkdirSync(releasesDir, { recursive: true });

@@ -2,7 +2,7 @@
 let console;
 
 (function () {
-  const preMessage = 'Ambient light for YouTube™ |';
+  const preMessage = 'Bilibili Ambilight |';
 
   const enrich = (...args) => {
     if (args.length <= 0) return args;

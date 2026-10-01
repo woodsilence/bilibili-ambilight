@@ -382,7 +382,7 @@ But if this happens frequently, here are some possible causes:
     const troubleshootLink = document.createElement('a');
     troubleshootLink.className = 'ytpa-feedback-link';
     troubleshootLink.href =
-      'https://github.com/WesselKroos/youtube-ambilight/blob/master/TROUBLESHOOT.md';
+      'https://github.com/woodsilence/bilibili-ambilight';
     troubleshootLink.target = '_blank';
     troubleshootLink.rel = 'noopener';
     header1Label.appendChild(troubleshootLink);

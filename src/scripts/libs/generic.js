@@ -531,7 +531,7 @@ export const setWarning = (text) => {
     titleElem.style.color = '#008cff';
     titleElem.style.fontSize = '22px';
     titleElem.style.lineHeight = '28px';
-    titleElem.textContent = 'Ambient light for YouTube™\n';
+    titleElem.textContent = 'Bilibili Ambilight\n';
     elem.appendChild(titleElem);
 
     const textElem = document.createElement('div');
@@ -567,9 +567,9 @@ Reload the webpage to try it again.
 
 Possible causes:
 - The memory of your GPU is fully used by another application.
-- You have to many YouTube webpages visible at the same time. You GPU can only render a limit amount of ambient lights at the same time.
+- You have too many Bilibili webpages visible at the same time. Your GPU can only render a limited amount of ambient lights at the same time.
 - You have changed a setting to a value that is incompatible with your GPU. Undo your last change and refresh the webpage. Or reset all settings with the reset button at the top right.`;
 
 export const canvasWebGLCrashTips = `${canvas2DCrashTips}
 
-Another possible workaround could be to turn off the "Quality" > "WebGL renderer" setting (This is an advanced setting). But if you do so, know that the legacy renderer requires more power.`;
+Another possible workaround could be to turn off the WebGL renderer setting.`;

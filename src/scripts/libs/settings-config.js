@@ -132,7 +132,7 @@ const SettingsConfig = [
   },
   {
     name: 'layoutPerformanceImprovements',
-    label: 'YouTube responsiveness fixes',
+    label: 'Responsiveness fixes',
     description: 'Improves the responsiveness of the webpage',
     questionMark: {
       title: `Some of the improvements on the /watch page include:
@@ -390,7 +390,7 @@ const SettingsConfig = [
     questionMark: {
       title:
         'Chromium has a bug that jitters the video playback when your display \nhas a higher framerate than 60Hz. This workaround prevents the jittering \nby forcing the browser to run at the framerate of your display instead. \nClick the questionmark for more information about this bug in Chromium browsers.',
-      href: 'https://github.com/WesselKroos/youtube-ambilight/issues/166',
+      href: 'https://github.com/woodsilence/bilibili-ambilight',
     },
     type: 'checkbox',
     default: false, // Should not be enabled by default because it also adds CPU & GPU overhead on 60Hz displays. (60Hz+ detection keeps toggling between off/on when VRR is enabled in the OS.)
@@ -407,7 +407,7 @@ when videos are in hardware accelerated overlays (MPO).
 Examples are: random black/white squares, flickering or a squeezed video.
 
 Click on the questionmark for more and updated information about these artifacts/bugs.`,
-      href: 'https://github.com/WesselKroos/youtube-ambilight/blob/master/TROUBLESHOOT.md#3-nvidia-rtx-video-super-resolution-vsr--nvidia-rtx-video-hdr-does-not-work',
+      href: 'https://github.com/woodsilence/bilibili-ambilight',
     },
     type: 'checkbox',
     default: false,
