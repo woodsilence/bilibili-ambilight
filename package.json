@@ -24,6 +24,7 @@
     "build:scripts:sourcemaps": "run-s build:scripts:sourcemaps:inject build:scripts:sourcemaps:copy",
     "build:scripts": "run-s build:scripts:rollup build:scripts:sourcemaps",
     "build": "run-s build:scripts build:styles build:manifest build:html build:images",
+    "pack": "node pack.js",
     "upload-sourcemaps": "dotenvx run -f .env -f .env.local --overload -- sentry-cli sourcemaps upload ./sourcemaps --release=2.38.17"
   },
   "engines": {
