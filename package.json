@@ -1,17 +1,14 @@
 {
-  "name": "youtube-ambientlight",
+  "name": "bilibili-ambilight",
   "version": "2.38.17",
-  "description": "This browser extension adds ambient light to the videos you view on YouTube",
+  "description": "This browser extension adds ambient light to the videos you view on Bilibili",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/WesselKroos/youtube-ambilight.git"
+    "url": "git+https://github.com/woodsilence/bilibili-ambilight.git"
   },
-  "author": "Wessel Kroos",
+  "author": "woodsilence",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/WesselKroos/youtube-ambilight/issues"
-  },
-  "homepage": "https://github.com/WesselKroos/youtube-ambilight#readme",
+  "homepage": "https://github.com/woodsilence/bilibili-ambilight#readme",
   "type": "module",
   "scripts": {
     "build:manifest": "node manifest-copy.js",

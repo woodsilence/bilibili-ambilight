@@ -183,10 +183,16 @@ export default class Ambientlight {
   }
 
   initElems(videoElem) {
-    this.videoPlayerElem = videoElem.closest('.html5-video-player');
+    this.videoPlayerElem =
+      videoElem.closest('.bpx-player-container') ||
+      videoElem.closest('#bilibili-player') ||
+      videoElem.closest('.bilibili-player') ||
+      videoElem.closest('#playerWrap') ||
+      videoElem.closest('.html5-video-player') ||
+      videoElem.parentElement;
     if (!this.videoPlayerElem) {
       const error = new Error(
-        'Cannot find videoPlayerElem: .html5-video-player'
+        'Cannot find videoPlayerElem'
       );
       error.details = getPageElems();
       error.details.videoIsInDocument = document.contains(videoElem);
@@ -198,22 +204,17 @@ export default class Ambientlight {
     this.videoPlayerElem.dataset.ytalElem = 'video-player';
 
     // ytdPlayerElem is optional and only used on non-embed pages in small view to set the border radius
-    this.ytdPlayerElem = videoElem.closest('ytd-player');
+    this.ytdPlayerElem = videoElem.closest('ytd-player') || this.videoPlayerElem;
 
     // videoContainerElem is optional and only used in the videoOverlayEnabled setting
-    this.videoContainerElem = videoElem.closest('.html5-video-container');
+    this.videoContainerElem =
+      videoElem.closest('.bpx-player-video-wrap') ||
+      videoElem.closest('.html5-video-container') ||
+      videoElem.parentElement;
 
     this.settingsMenuBtnParent = this.videoPlayerElem.querySelector(
-      '.ytp-right-controls, .ytp-chrome-controls > *:last-child'
+      '.bpx-player-control-bottom-right, .ytp-right-controls, .ytp-chrome-controls > *:last-child'
     );
-    if (!this.settingsMenuBtnParent) {
-      const error = new Error(
-        'Cannot find settingsMenuBtnParent: .ytp-right-controls, .ytp-chrome-controls > *:last-child'
-      );
-      error.details = getPageElems();
-      setWarning(`Failed to load.\n${error.message}`);
-      throw error;
-    }
 
     this.initVideoElem(videoElem, false);
   }
@@ -1267,10 +1268,20 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
     await this.initProjector();
   }
 
-  getContentElem = () =>
-    this.ytdAppElem
-      ? this.ytdAppElem.querySelector('#content.ytd-app')
-      : this.videoPlayerElem; // In embed view
+  getContentElem = () => {
+    if (this.view === VIEW_FULLSCREEN) {
+      return document.fullscreenElement || this.videoPlayerElem;
+    }
+    const screenAttr = this.videoPlayerElem?.getAttribute('data-screen');
+    if (screenAttr === 'web' || screenAttr === 'full') {
+      return this.videoPlayerElem;
+    }
+    if (this.ytdAppElem?.querySelector) {
+      const ytdContent = this.ytdAppElem.querySelector('#content.ytd-app');
+      if (ytdContent) return ytdContent;
+    }
+    return document.body;
+  };
 
   getFullscreenContentElem() {
     let elem = this.getContentElem();
@@ -1645,22 +1656,31 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
 
     if (!document.contains(this.videoPlayerElem)) return VIEW_DETACHED;
 
-    if (
+    const screenAttr = this.videoPlayerElem?.getAttribute('data-screen');
+    const isFullscreen =
       document.fullscreenElement ||
-      this.videoPlayerElem.classList.contains('ytp-fullscreen')
-    )
-      return VIEW_FULLSCREEN;
+      screenAttr === 'full' ||
+      this.videoPlayerElem?.classList?.contains('bpx-state-fullscreen') ||
+      this.videoPlayerElem?.classList?.contains('ytp-fullscreen');
 
-    if (this.videoPlayerElem.classList.contains('ytp-player-minimized'))
-      return VIEW_POPUP;
+    if (isFullscreen) return VIEW_FULLSCREEN;
 
-    if (
-      this.ytdWatchElemFromVideo
+    const isMinimized =
+      screenAttr === 'mini' ||
+      this.videoPlayerElem?.classList?.contains('ytp-player-minimized');
+
+    if (isMinimized) return VIEW_POPUP;
+
+    const isTheater =
+      screenAttr === 'web' ||
+      screenAttr === 'wide' ||
+      this.videoPlayerElem?.classList?.contains('bpx-state-web-fullscreen') ||
+      this.videoPlayerElem?.classList?.contains('bpx-state-wide') ||
+      (this.ytdWatchElemFromVideo
         ? this.ytdWatchElemFromVideo.getAttribute('theater') != null
-        : this.playerTheaterContainerElemFromVideo
-    ) {
-      return VIEW_THEATER;
-    }
+        : this.playerTheaterContainerElemFromVideo);
+
+    if (isTheater) return VIEW_THEATER;
 
     return VIEW_SMALL;
   };
@@ -1746,8 +1766,15 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
 
     const fullscreenElemChanged =
       document.fullscreenElement !== this.fullscreenElem;
-    this.fullscreenElem = document.fullscreenElement;
-    if (fullscreenChanged || fullscreenElemChanged) {
+    const targetContentElem = this.isFullscreen
+      ? this.getFullscreenContentElem()
+      : this.getContentElem();
+    if (
+      this.elem &&
+      (fullscreenChanged ||
+        fullscreenElemChanged ||
+        this.elem.parentElement !== targetContentElem)
+    ) {
       if (this.isFullscreen) {
         this.appendElemToFullscreenElem();
       } else {
@@ -2155,6 +2182,33 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
 
     this.resizeCanvasses();
     this.stats.initElems();
+
+    if (this.elem && this.view !== VIEW_FULLSCREEN && !this.settings.fixedPosition) {
+      const scrollHeight = Math.max(
+        document.body?.scrollHeight || 0,
+        document.documentElement?.scrollHeight || 0,
+        document.querySelector('#app')?.scrollHeight || 0,
+        window.innerHeight
+      );
+      const scrollWidth = Math.max(
+        document.body?.scrollWidth || 0,
+        document.documentElement?.scrollWidth || 0,
+        window.innerWidth
+      );
+      this.elem.style.minHeight = `${scrollHeight}px`;
+      this.elem.style.minWidth = `${scrollWidth}px`;
+      if (this.containerElem) {
+        this.containerElem.style.minHeight = `${scrollHeight}px`;
+        this.containerElem.style.minWidth = `${scrollWidth}px`;
+      }
+    } else if (this.elem) {
+      this.elem.style.minHeight = '';
+      this.elem.style.minWidth = '';
+      if (this.containerElem) {
+        this.containerElem.style.minHeight = '';
+        this.containerElem.style.minWidth = '';
+      }
+    }
 
     this.sizesChanged = false;
     this.buffersCleared = true;

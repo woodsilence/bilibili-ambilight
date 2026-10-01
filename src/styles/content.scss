@@ -3448,3 +3448,116 @@ html[data-ambientlight-related-scrollbar] {
     }
   }
 }
+
+/* ==========================================================================
+   Bilibili Ambilight Styles
+   ========================================================================== */
+
+html[data-ambientlight-enabled] {
+  body {
+    position: relative;
+    min-height: 100vh;
+  }
+
+  #app {
+    position: relative;
+    z-index: 1;
+    background-color: transparent !important;
+  }
+
+  /* Make containers and wrappers transparent so ambient light shines through */
+  .video-container-v1,
+  .player-and-aside-area,
+  .left-container,
+  .left-container-under-player,
+  .right-container,
+  .right-container-v1,
+  #comment,
+  bili-comments,
+  .comment-m,
+  .comment-container,
+  .reply-warp,
+  .recommend-list-v1,
+  .rec-list {
+    position: relative;
+    background-color: transparent !important;
+  }
+
+  .danmaku-box {
+    background-color: rgba(241, 242, 243, 0.5) !important;
+    backdrop-filter: blur(10px);
+  }
+
+  #bilibili-player,
+  #playerWrap,
+  .bpx-player-container {
+    background-color: transparent !important;
+  }
+
+  /* Standard page layout: place ambientlight behind the page content on body or #app */
+  body > .ambientlight,
+  #app > .ambientlight {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-width: 100%;
+    height: 100%;
+    min-height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+
+    .ambientlight__container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-width: 100%;
+      height: 100%;
+      min-height: 100%;
+      z-index: 0 !important;
+      background: transparent !important;
+      overflow: hidden;
+      contain: none !important;
+    }
+
+    .ambientlight__clip,
+    .ambientlight__filter {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-width: 100%;
+      height: 100%;
+      min-height: 100%;
+    }
+  }
+
+  /* When inside Bilibili player container (web fullscreen or fullscreen) */
+  .bpx-player-container {
+    .ambientlight {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambientlight__container {
+      z-index: 0 !important;
+      min-height: 100% !important;
+      height: 100% !important;
+      background: transparent !important;
+      overflow: hidden;
+    }
+
+    .bpx-player-primary-area {
+      z-index: 1;
+    }
+  }
+}

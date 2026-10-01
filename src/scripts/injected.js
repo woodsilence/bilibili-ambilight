@@ -120,14 +120,14 @@ function videoPlayerSetSize() {
   const videoPlayerElem = getElem('video-player');
   if (videoPlayerElem) {
     try {
-      videoPlayerElem.setSize();
-      videoPlayerElem.setInternalSize();
-    } catch (ex) {
-      console.warn(
-        `Failed to resize the video player${
-          ex?.message ? `: ${ex?.message}` : ''
-        }`
-      );
+      if (typeof videoPlayerElem.setSize === 'function') {
+        videoPlayerElem.setSize();
+      }
+      if (typeof videoPlayerElem.setInternalSize === 'function') {
+        videoPlayerElem.setInternalSize();
+      }
+    } catch {
+      // Ignore if player doesn't have custom setSize methods
     }
   }
   contentScript.postMessage('sizes-changed');

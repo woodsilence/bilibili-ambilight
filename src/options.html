@@ -1,104 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <title>Ambient light for YouTube&trade; settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>哔哩哔哩流光溢彩 设置</title>
   <link rel="stylesheet" href="styles/options.css">
 </head>
 
 <body>
-  <main>
-    <h1>Ambient light for YouTube&trade;</h1>
-    <p>
-      The settings are accessible from video player:<br/><br/>
-      <img src="images/settings-moved-to.png" />
-    </p>
-    
-    <h2>I see no settings button</h2>
-    <p>
-      Please refresh the webpage in the browser.<br/><br/>
-      <i>If after the refresh the settings button is still not shown you can open your browser's console (Press F12) to search for any errors or warnings and report those by:<br/>
-      <a href="https://github.com/WesselKroos/youtube-ambilight/issues" target="_blank">creating an issue</a>
-      or 
-      <a id="feedbackFormLink" href="https://docs.google.com/forms/d/1OU7e3fOXk2NJSppCj4hrAE0lUgi8utccdooX1rUnycU" target="_blank">filling out the feedback form</a>
-      </i>
-    </p>
-    <h2>Fix performance issues</h2>
-    <p>
-      Follow the <a href="https://github.com/WesselKroos/youtube-ambilight/blob/master/TROUBLESHOOT.md" target="_blank">troubelshoot guide</a> to resolve performance issue
-    </p>
-
-    <h2>Support me</h2>
-    <p>
-      <a class="donate-link" href="https://ko-fi.com/G2G59EK8L" target="_blank" rel="noopener">
-        <img src="images/donate.svg" alt="Support me via a donation" title="Support me via a donation" height="33" />
-      </a>
-    </p>
-
-    <h2>Import / Export settings</h2>
-    <div id="importExportStatus" class="import-export-status"></div>
-    <div id="importExportStatusDetails" class="import-export-status-details" tabindex="0"></div>
-    <h3>File storage</h3>
-    <p>
-      <button id="exportFileBtn">Export to file</button>
-      <button id="importFileBtn">Import from file</button>
-      <input hidden name="import-settings-file" type="file" accept=".json"/>
-    </p>
-    <h3>Cloud storage (Your browser account)</h3>
-    <p>
-      <button id="exportAccountBtn">Export to cloud</button>
-      <button id="importAccountBtn" disabled>Import from cloud</button>
-    </p>
-    <p>
-      <div id="importableAccountStatus" class="importable-account-status"></div>
-    </p>
-
-    <h2>Crash reports & Privacy</h2>
-    <p>
-      A crash report contains only anonymous data and will be deleted after 30 days.
-      However, anonymous data is still your data. That's why you can control what it contains via the settings below.<br/>
-    </p>
-
-    <div class="warnings-container"></div>
-
-    <h3>A crash report is allowed to contain:</h3>
-    <ul>
-      <li>
-        <div class="option">
-          <input type="checkbox" name="video"/>
-          <label>The url and video ID being watched at the time of the crash</label>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-badge">
+          <svg class="glow-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+          </svg>
         </div>
-      </li>
-      <li>
-        <div class="option">
-          <input type="checkbox" name="technical"/>
-          <div class="expandable">
-            <div class="expandable__title">
-              <label>Anonymous technical data</label>
-              <button class="expandable__toggle" title="Display the list of technical info">&gt;</button>
-            </div>
-            <ul class="expandable__details">
-              <li>Browser version</li>
-              <li>Operating system version</li>
-              <li>Display capabilities</li>
-              <li>Videoplayer state <i>(Does not contain the video id or title)</i></li>
-              <li>YouTube layout state <i>(Does not contain your YouTube account data)</i></li>
-            </ul>
+        <div>
+          <h1 class="title">Bilibili Ambilight</h1>
+          <p class="subtitle">哔哩哔哩流光溢彩</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <label class="switch" title="开启/关闭流光溢彩">
+          <input type="checkbox" id="setting-enabled" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </header>
+
+    <div class="hotkey-tip">
+      <span>💡 播放页面支持快捷键 <strong>G</strong> 快速切换开/关</span>
+    </div>
+
+    <!-- Main Settings Body -->
+    <main class="content">
+      <!-- Section: Visuals -->
+      <section class="section">
+        <h2 class="section-title">
+          <span class="section-icon">✨</span> 基础光效
+        </h2>
+
+        <div class="control-group">
+          <div class="control-header">
+            <label for="setting-spread">扩散范围 (Spread)</label>
+            <span class="value-badge" id="val-spread">17%</span>
           </div>
+          <input type="range" id="setting-spread" min="0" max="100" step="1" value="17" />
         </div>
-      </li>
-      <li>
-        <div class="option">
-          <input type="checkbox" name="crash"/>
-          <label>Ambient light state and error information</label>
+
+        <div class="control-group">
+          <div class="control-header">
+            <label for="setting-blur2">边缘模糊度 (Blur)</label>
+            <span class="value-badge" id="val-blur2">30%</span>
+          </div>
+          <input type="range" id="setting-blur2" min="0" max="100" step="1" value="30" />
         </div>
-      </li>
-    </ul>
-    <p>
-      No crash reports will be sent when all checkboxes are unchecked.<br/>
-      <a id="privacyPolicyLink" href="#" target="_blank">Our privacy policy</a>
-    </p>
-  </main>
+
+        <div class="control-group">
+          <div class="control-header">
+            <label for="setting-brightness">画面亮度 (Brightness)</label>
+            <span class="value-badge" id="val-brightness">100%</span>
+          </div>
+          <input type="range" id="setting-brightness" min="50" max="200" step="1" value="100" />
+        </div>
+
+        <div class="control-group">
+          <div class="control-header">
+            <label for="setting-contrast">对比度 (Contrast)</label>
+            <span class="value-badge" id="val-contrast">100%</span>
+          </div>
+          <input type="range" id="setting-contrast" min="50" max="200" step="1" value="100" />
+        </div>
+
+        <div class="control-group">
+          <div class="control-header">
+            <label for="setting-saturation">饱和度 (Saturation)</label>
+            <span class="value-badge" id="val-saturation">100%</span>
+          </div>
+          <input type="range" id="setting-saturation" min="50" max="200" step="1" value="100" />
+        </div>
+
+        <div class="control-group">
+          <div class="control-header">
+            <label for="setting-vibrance">色彩鲜艳度 (Vibrance)</label>
+            <span class="value-badge" id="val-vibrance">100%</span>
+          </div>
+          <input type="range" id="setting-vibrance" min="50" max="200" step="1" value="100" />
+        </div>
+      </section>
+
+      <!-- Section: Performance & Quality -->
+      <section class="section">
+        <h2 class="section-title">
+          <span class="section-icon">⚡</span> 性能与画质
+        </h2>
+
+        <div class="control-group-row">
+          <label for="setting-webGL">WebGL 硬件加速渲染</label>
+          <input type="checkbox" id="setting-webGL" checked />
+        </div>
+
+        <div class="control-group">
+          <div class="control-header">
+            <label for="setting-framerateLimit">最大帧率 (FPS)</label>
+            <span class="value-badge" id="val-framerateLimit">60 FPS</span>
+          </div>
+          <select id="setting-framerateLimit" class="select-input">
+            <option value="30">30 FPS (省电模式)</option>
+            <option value="60" selected>60 FPS (流畅推荐)</option>
+            <option value="0">无限制 (最高同步刷新率)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <div class="control-header">
+            <label for="setting-resolution">渲染清晰度</label>
+            <span class="value-badge" id="val-resolution">100%</span>
+          </div>
+          <select id="setting-resolution" class="select-input">
+            <option value="50">50% (低开销)</option>
+            <option value="100" selected>100% (标准)</option>
+            <option value="200">200% (高清细腻)</option>
+          </select>
+        </div>
+
+        <div class="control-group-row">
+          <label for="setting-detectHorizontalBarSizeEnabled">自动检测上下黑边并裁剪</label>
+          <input type="checkbox" id="setting-detectHorizontalBarSizeEnabled" checked />
+        </div>
+
+        <div class="control-group-row">
+          <label for="setting-detectVerticalBarSizeEnabled">自动检测左右黑边并裁剪</label>
+          <input type="checkbox" id="setting-detectVerticalBarSizeEnabled" checked />
+        </div>
+      </section>
+
+      <!-- Actions -->
+      <section class="section action-section">
+        <button id="resetDefaultsBtn" class="btn btn-secondary">恢复默认设置</button>
+        <button id="exportSettingsBtn" class="btn btn-primary">导出配置</button>
+        <button id="importSettingsBtn" class="btn btn-secondary">导入配置</button>
+        <input type="file" id="importFileInput" accept=".json" hidden />
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>Bilibili Ambilight v2.38</span>
+    </footer>
+  </div>
+
   <script src="scripts/options.js"></script>
 </body>
 </html>

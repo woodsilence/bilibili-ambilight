@@ -3,19 +3,9 @@ import {
   wrapErrorHandler,
   isWatchPageUrl,
   setErrorHandler,
-  watchSelectors,
-  isEmbedPageUrl,
   setWarning,
-  off,
 } from './libs/generic';
 import { ErrorEvents } from './libs/errors/events';
-import {
-  getNodeTreeString,
-  getOtherUnknownAppElems,
-  getPageElems,
-  getSelectorTreeString,
-} from './libs/errors/dom';
-import { AmbientlightError } from './libs/errors/ambient-light-error';
 import SentryReporter, {
   setVersion,
   setCrashOptions,
@@ -29,9 +19,8 @@ import { defaultCrashOptions, storage } from './libs/storage';
 setErrorHandler((ex) => SentryReporter.captureException(ex));
 
 wrapErrorHandler(async function initVersionAndCrashOptions() {
-  const version = getVersion(); // document.currentScript?.getAttribute('data-version') || ''
+  const version = getVersion();
   setVersion(version);
-  // const options = JSON.parse(document.currentScript?.getAttribute('data-crash-options'))
   const crashOptions =
     (await storage.get('crashOptions')) || defaultCrashOptions;
   setCrashOptions(crashOptions);
@@ -51,59 +40,6 @@ let errorEvents;
 wrapErrorHandler(function initErrorEvents() {
   errorEvents = new ErrorEvents();
 })();
-
-const logErrorEventWithPageTrees = (message, details = {}) => {
-  if (!isWatchPageUrl()) return;
-  if (isVideoInKnownInvalidLocation()) return;
-
-  details = {
-    ...details,
-    ...getPageElems(),
-  };
-
-  errorEvents.add(message, details);
-};
-
-const isVideoInKnownInvalidLocation = () => {
-  const ytdAppPlayerVideoElem = () =>
-    document.querySelector(
-      'ytd-app > #container.ytd-player video.html5-main-video'
-    );
-  const playerApiVideoElem = () =>
-    document.querySelector('#player-api video.html5-main-video');
-  const ytPlayerManagerVideoElem = () =>
-    document.querySelector('yt-player-manager video.html5-main-video');
-  const ytdInlinePreviewPlayerVideoElem = () =>
-    document.querySelector('#inline-preview-player video.html5-main-video');
-  const ytdBrowseVideoElem = () =>
-    document.querySelector('ytd-browse video.html5-main-video');
-  const ytdMiniplayerVideoElem = () =>
-    document.querySelector('ytd-miniplayer video.html5-main-video');
-  const channelPlayerVideoElem = () =>
-    document.querySelector(
-      'ytd-channel-video-player-renderer video.html5-main-video'
-    );
-  const isInShorts = () =>
-    document.querySelector('ytd-shorts video.html5-main-video');
-  const isControlledByAnotherExtension = () =>
-    document.querySelector('.html5-video-container video.stefanvdvideotop');
-  const outsideYtdAppVideoElem = () =>
-    document.querySelector(
-      'html > *:not(body) video.html5-main-video, body > *:not(ytd-app) video.html5-main-video, body > video.html5-main-video'
-    );
-  return !!(
-    ytdAppPlayerVideoElem() ||
-    playerApiVideoElem() ||
-    ytPlayerManagerVideoElem() ||
-    ytdInlinePreviewPlayerVideoElem() ||
-    ytdBrowseVideoElem() ||
-    ytdMiniplayerVideoElem() ||
-    channelPlayerVideoElem() ||
-    isInShorts() ||
-    isControlledByAnotherExtension() ||
-    outsideYtdAppVideoElem()
-  );
-};
 
 const detectDetachedVideo = () => {
   const observer = new MutationObserver(
@@ -127,40 +63,14 @@ const detectDetachedVideo = () => {
       if (!document.querySelector('video')) return;
 
       const newVideoElem =
-        document.body !== ytdAppElem
-          ? document.querySelector(
-              watchSelectors
-                .map(
-                  (selector) =>
-                    `ytd-app #content.ytd-app ${selector} video.html5-main-video`
-                )
-                .join(', ')
-            )
-          : ytdAppElem.querySelector('video.html5-main-video');
+        document.querySelector('.bpx-player-video-wrap video') ||
+        document.querySelector('.bpx-player-container video') ||
+        document.querySelector('#bilibili-player video') ||
+        document.querySelector('.bilibili-player-video video') ||
+        document.querySelector('#playerWrap video') ||
+        document.querySelector('video');
       if (!newVideoElem) {
-        logErrorEventWithPageTrees('detectDetachedVideo');
         return;
-      }
-
-      if (document.body !== ytdAppElem) {
-        const newYtdAppElem = newVideoElem.closest('ytd-app');
-        if (newYtdAppElem !== ytdAppElem) {
-          const details = {
-            documentHasOldVideo: document.contains(videoElem),
-            documentHasOldYtdApp: document.contains(ytdAppElem),
-            htmlHasOldVideo: document.documentElement?.contains(videoElem),
-            htmlHasOldYtdApp: document.documentElement?.contains(ytdAppElem),
-            newYtdAppHasOldVideo: newYtdAppElem?.contains(videoElem),
-            oldYtdAppHasOldVideo: ytdAppElem?.contains(videoElem),
-            oldYtdAppTree: getNodeTreeString(ytdAppElem),
-            oldVideoTree: getNodeTreeString(videoElem),
-          };
-          logErrorEventWithPageTrees('detectDetachedYtdApp', details);
-          return;
-          // Migrating to a new ytd-app element is not supported,
-          // because it will also require moving or re-creating the
-          // settings menu, canvasses and other elements
-        }
       }
 
       if (videoElem !== newVideoElem) {
@@ -185,108 +95,45 @@ const detectDetachedVideo = () => {
   });
 };
 
-const waitForVideoInteraction = async (videoElem) => {
-  if (videoElem.readyState > 2 && !videoElem.paused && !videoElem.ended) return;
 
-  await new Promise((resolve, reject) => {
-    try {
-      const onInteraction = () => {
-        off(videoElem, 'playing', onInteraction);
-        off(window, 'click', onInteraction);
-        resolve();
-      };
-      on(videoElem, 'playing', onInteraction, { once: true });
-      on(window, 'click', onInteraction, { once: true });
-    } catch (ex) {
-      reject(ex);
-    }
-  });
+
+const findVideoElem = () => {
+  return (
+    document.querySelector('.bpx-player-video-wrap video') ||
+    document.querySelector('.bpx-player-container video') ||
+    document.querySelector('#bilibili-player video') ||
+    document.querySelector('.bilibili-player-video video') ||
+    document.querySelector('#playerWrap video') ||
+    document.querySelector('video')
+  );
 };
 
 const tryInitAmbientlight = async () => {
   if (window.ambientlight) return true;
   if (!isWatchPageUrl()) return;
-  if (!document.querySelector('video')) return;
+  const videoElem = findVideoElem();
+  if (!videoElem) return;
 
-  const settingsMenuBtnParentSelector = [
-    '.html5-video-player .ytp-right-controls',
-    '.html5-video-player .ytp-chrome-controls > *:last-child',
-  ].join(', ');
-  const hasSettingsMenuBtnParent = !!document.querySelector(
-    settingsMenuBtnParentSelector
-  );
-  if (!hasSettingsMenuBtnParent) {
-    logErrorEventWithPageTrees(
-      `initialize - not found yet: ${settingsMenuBtnParentSelector}`
-    );
-    return;
-  }
+  const ytdAppElem =
+    document.querySelector('#app') ||
+    document.querySelector('.video-container-v1') ||
+    document.querySelector('ytd-app') ||
+    document.body;
 
-  if (isEmbedPageUrl()) {
-    const videoElem = document.querySelector(
-      '#player .html5-video-player .html5-video-container video.html5-main-video'
-    );
-    if (!videoElem) {
-      logErrorEventWithPageTrees(
-        'initialize - not found yet: #player .html5-video-player .html5-video-container video.html5-main-video'
-      );
-      return;
-    }
+  const ytdWatchElem =
+    document.querySelector('.video-container-v1') ||
+    document.querySelector('.player-and-aside-area') ||
+    document.querySelector('#playerWrap') ||
+    document.querySelector('#bilibili-player') ||
+    document.querySelector('.bpx-player-container') ||
+    document.body;
 
-    await waitForVideoInteraction(videoElem);
-    if (!document.body?.contains(videoElem)) return;
+  const mastheadElem =
+    document.querySelector('#biliMainHeader') ||
+    document.querySelector('.bili-header') ||
+    document.querySelector('ytd-app #masthead-container') ||
+    null;
 
-    window.ambientlight = await new Ambientlight(videoElem);
-
-    errorEvents.list = [];
-    detectDetachedVideo();
-    return true;
-  }
-
-  const videoElem = document.querySelector(
-    watchSelectors
-      .map(
-        (selector) =>
-          `ytd-app #content.ytd-app ${selector} .html5-video-player .html5-video-container video.html5-main-video`
-      )
-      .join(', ')
-  );
-  if (!videoElem) {
-    logErrorEventWithPageTrees(
-      'initialize - not found yet: ytd-app ytd-watch-... .html5-video-player .html5-video-container video.html5-main-video'
-    );
-    return;
-  }
-
-  const ytdAppElem = document.querySelector('ytd-app');
-  if (!ytdAppElem) {
-    logErrorEventWithPageTrees('initialize - not found yet: ytd-app');
-    return;
-  }
-
-  const contentElem = document.querySelector('#content.ytd-app');
-  if (!contentElem) {
-    logErrorEventWithPageTrees('initialize - not found yet: #content.ytd-app');
-    return;
-  }
-
-  const ytdWatchElem = document.querySelector(
-    watchSelectors.map((selector) => `ytd-app ${selector}`).join(', ')
-  );
-  if (!ytdWatchElem) {
-    logErrorEventWithPageTrees(
-      `initialize - not found yet: ytd-app ytd-watch-...`
-    );
-    return;
-  }
-
-  const mastheadElem = document.querySelector('ytd-app #masthead-container');
-  if (!mastheadElem) {
-    logErrorEventWithPageTrees(
-      'initialize - not found yet: #masthead-container'
-    );
-    return;
-  }
   window.ambientlight = await new Ambientlight(
     videoElem,
     ytdAppElem,
@@ -324,16 +171,12 @@ const detectWatchPageVideo = (ytdAppElem) => {
   });
 };
 const startIfWatchPageHasVideo = () => {
-  if (!isWatchPageUrl() || window.ambientlight.isOnVideoPage) {
+  if (!isWatchPageUrl() || window.ambientlight?.isOnVideoPage) {
     getWatchPageViewObserver().disconnect();
     return;
   }
 
-  const videoElem = document.querySelector(
-    watchSelectors
-      .map((selector) => `ytd-app ${selector} video.html5-main-video`)
-      .join(', ')
-  );
+  const videoElem = findVideoElem();
   if (!videoElem) return;
 
   getWatchPageViewObserver().disconnect();
@@ -342,51 +185,44 @@ const startIfWatchPageHasVideo = () => {
 };
 
 const detectPageTransitions = (ytdAppElem) => {
-  on(
-    document,
-    'yt-navigate-finish',
-    async function onYtNavigateFinish() {
-      getWatchPageViewObserver().disconnect();
-      if (isWatchPageUrl()) {
-        startIfWatchPageHasVideo();
-        if (!window.ambientlight.isOnVideoPage) {
-          detectWatchPageVideo(ytdAppElem);
-        }
-      } else {
-        if (window.ambientlight.isOnVideoPage) {
-          window.ambientlight.isOnVideoPage = false;
-          await window.ambientlight.hide();
-        }
+  const onPageTransition = async () => {
+    getWatchPageViewObserver().disconnect();
+    if (isWatchPageUrl()) {
+      startIfWatchPageHasVideo();
+      if (!window.ambientlight?.isOnVideoPage) {
+        detectWatchPageVideo(ytdAppElem);
       }
-    },
-    undefined,
-    true
-  );
+    } else {
+      if (window.ambientlight?.isOnVideoPage) {
+        window.ambientlight.isOnVideoPage = false;
+        await window.ambientlight.hide();
+      }
+    }
+  };
+
+  on(document, 'yt-navigate-finish', onPageTransition, undefined, true);
+
+  // Bilibili SPA page transitions
+  window.addEventListener('popstate', onPageTransition);
+  let lastHref = location.href;
+  const hrefObserver = new MutationObserver(() => {
+    if (location.href !== lastHref) {
+      lastHref = location.href;
+      onPageTransition();
+    }
+  });
+  hrefObserver.observe(document, { subtree: true, childList: true });
 };
 
 const loadAmbientlight = async () => {
   // Mobile player
   if (document.querySelector('#player-control-container')) return;
 
-  // Validate YouTube desktop web app or embedded page
-  let observerTarget = document.querySelector('ytd-app');
-  if (!observerTarget) {
-    if (isEmbedPageUrl()) {
-      observerTarget = document.documentElement;
-    } else {
-      const otherAppElems = getOtherUnknownAppElems();
-      if (otherAppElems.length) {
-        const selectorTree = getSelectorTreeString(
-          otherAppElems.map((elem) => elem.tagName).join(',')
-        );
-        throw new AmbientlightError(
-          'Found one or more *-app elements but cannot find desktop app element: ytd-app',
-          selectorTree
-        );
-      }
-      return;
-    }
-  }
+  let observerTarget =
+    document.querySelector('#app') ||
+    document.querySelector('ytd-app') ||
+    document.body ||
+    document.documentElement;
 
   if (await tryInitAmbientlight()) return;
   // Not on the watch page yet

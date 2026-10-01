@@ -391,11 +391,24 @@ export const supportsColorMix = () => {
   return _supportsColorMix;
 };
 
-export const isWatchPageUrl = () =>
-  ['/watch', '/live/'].some((path) => location.pathname.startsWith(path)) ||
-  isEmbedPageUrl();
+export const isWatchPageUrl = () => {
+  const path = location.pathname;
+  return (
+    path.startsWith('/video/') ||
+    path.startsWith('/list/') ||
+    path.startsWith('/medialist/play/') ||
+    path.startsWith('/bangumi/play/') ||
+    path.startsWith('/festival/') ||
+    path.startsWith('/blackboard/') ||
+    path.startsWith('/watch') ||
+    isEmbedPageUrl()
+  );
+};
 
-export const isEmbedPageUrl = () => location.pathname?.startsWith('/embed/');
+export const isEmbedPageUrl = () =>
+  location.pathname?.startsWith('/embed/') ||
+  location.pathname?.startsWith('/player.html') ||
+  location.hostname === 'player.bilibili.com';
 
 export const getCookie = async (name) =>
   globalThis.cookieStore
@@ -462,6 +475,11 @@ export const VIEW_FULLSCREEN = 'FULLSCREEN';
 export const VIEW_POPUP = 'POPUP';
 
 export const watchSelectors = [
+  '#bilibili-player',
+  '.bpx-player-container',
+  '#playerWrap',
+  '.video-container-v1',
+  '.player-and-aside-area',
   'ytd-watch-flexy',
   'ytd-watch-fixie',
   'ytd-watch-grid',

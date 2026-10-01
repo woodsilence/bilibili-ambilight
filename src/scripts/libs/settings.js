@@ -661,40 +661,42 @@ But if this happens frequently, here are some possible causes:
   }
 
   initMenu() {
-    this.menuBtn = this.createMenuButton();
-    on(this.menuBtn, 'click', this.onSettingsBtnClicked);
+    if (this.menuBtnParent) {
+      this.menuBtn = this.createMenuButton();
+      on(this.menuBtn, 'click', this.onSettingsBtnClicked);
 
-    const settingsMenuBtnTooltip = document.createElement('div');
-    settingsMenuBtnTooltip.className =
-      'ytp-tooltip ytp-bottom ytp-ambientlight-settings-button-tooltip';
-    settingsMenuBtnTooltip.setAttribute('aria-live', 'polite');
-    settingsMenuBtnTooltip.style.opacity = 0;
+      const settingsMenuBtnTooltip = document.createElement('div');
+      settingsMenuBtnTooltip.className =
+        'ytp-tooltip ytp-bottom ytp-ambientlight-settings-button-tooltip';
+      settingsMenuBtnTooltip.setAttribute('aria-live', 'polite');
+      settingsMenuBtnTooltip.style.opacity = 0;
 
-    const settingsMenuBtnTooltipTextWrapper = document.createElement('div');
-    settingsMenuBtnTooltipTextWrapper.className = 'ytp-tooltip-text-wrapper';
-    settingsMenuBtnTooltip.prepend(settingsMenuBtnTooltipTextWrapper);
+      const settingsMenuBtnTooltipTextWrapper = document.createElement('div');
+      settingsMenuBtnTooltipTextWrapper.className = 'ytp-tooltip-text-wrapper';
+      settingsMenuBtnTooltip.prepend(settingsMenuBtnTooltipTextWrapper);
 
-    this.settingsMenuBtnTooltipText = document.createElement('span');
-    this.settingsMenuBtnTooltipText.className = 'ytp-tooltip-bottom-text';
-    this.settingsMenuBtnTooltipText.appendChild(
-      document.createTextNode('Ambient light loading is paused.')
-    );
-    this.settingsMenuBtnTooltipText.appendChild(document.createElement('br'));
-    this.settingsMenuBtnTooltipText.appendChild(
-      document.createTextNode(
-        'Waiting for the video and page to be loaded first...'
-      )
-    );
-    settingsMenuBtnTooltipTextWrapper.prepend(this.settingsMenuBtnTooltipText);
+      this.settingsMenuBtnTooltipText = document.createElement('span');
+      this.settingsMenuBtnTooltipText.className = 'ytp-tooltip-bottom-text';
+      this.settingsMenuBtnTooltipText.appendChild(
+        document.createTextNode('Ambient light loading is paused.')
+      );
+      this.settingsMenuBtnTooltipText.appendChild(document.createElement('br'));
+      this.settingsMenuBtnTooltipText.appendChild(
+        document.createTextNode(
+          'Waiting for the video and page to be loaded first...'
+        )
+      );
+      settingsMenuBtnTooltipTextWrapper.prepend(this.settingsMenuBtnTooltipText);
 
-    this.menuBtn.prepend(settingsMenuBtnTooltip);
-    const ytSettingsBtn = document.querySelector(
-      'ytd-player [data-tooltip-target-id="ytp-autonav-toggle-button"]'
-    );
-    if (ytSettingsBtn) {
-      ytSettingsBtn.parentNode.insertBefore(this.menuBtn, ytSettingsBtn);
-    } else {
-      this.menuBtnParent.prepend(this.menuBtn);
+      this.menuBtn.prepend(settingsMenuBtnTooltip);
+      const ytSettingsBtn = document.querySelector(
+        'ytd-player [data-tooltip-target-id="ytp-autonav-toggle-button"]'
+      );
+      if (ytSettingsBtn) {
+        ytSettingsBtn.parentNode.insertBefore(this.menuBtn, ytSettingsBtn);
+      } else {
+        this.menuBtnParent.prepend(this.menuBtn);
+      }
     }
     setDisplayErrorHandler(this.onError);
 
@@ -812,11 +814,12 @@ But if this happens frequently, here are some possible causes:
       e.preventDefault();
     });
 
-    this.menuElemParent.prepend(this.menuElem);
+    const targetParent = this.menuElemParent || document.body;
+    targetParent.prepend(this.menuElem);
 
     this.bezelElem = this.createBezelElem();
     this.bezelTextElem = this.bezelElem.querySelector('text');
-    this.menuElemParent.prepend(this.bezelElem);
+    targetParent.prepend(this.bezelElem);
 
     for (const setting of SettingsConfig) {
       const settingElem = this.menuElem.querySelector(
@@ -1381,7 +1384,7 @@ But if this happens frequently, here are some possible causes:
     const is2025PlayerUI = !!document.querySelector(
       '.ytp-settings-button svg[viewBox="0 0 24 24"]'
     );
-    if (!is2020PlayerUI && !is2025PlayerUI) {
+    if (!is2020PlayerUI && !is2025PlayerUI && location.hostname.includes('youtube.com')) {
       const error = new AmbientlightError('Updated player (controls) UI');
       const settingsMenuBtnParentSelector = [
         '.html5-video-player .ytp-right-controls',
@@ -1555,7 +1558,7 @@ But if this happens frequently, here are some possible causes:
         this.menuOnCloseScrollBottom * percentage;
     }
 
-    this.menuBtn.setAttribute('aria-expanded', true);
+    this.menuBtn?.setAttribute('aria-expanded', true);
 
     if (this.ambientlight.videoPlayerElem) {
       this.ambientlight.videoPlayerElem.classList.add(
@@ -1595,7 +1598,7 @@ But if this happens frequently, here are some possible causes:
     }, 500);
     this.menuElem.classList.add('fade-out');
 
-    this.menuBtn.setAttribute('aria-expanded', false);
+    this.menuBtn?.setAttribute('aria-expanded', false);
 
     if (this.ambientlight.videoPlayerElem) {
       this.ambientlight.videoPlayerElem.classList.remove(
@@ -1619,10 +1622,12 @@ But if this happens frequently, here are some possible causes:
   };
 
   onLoaded = () => {
-    if (!this.menuBtn.classList.contains('is-loading')) return;
+    if (!this.menuBtn || !this.menuBtn.classList.contains('is-loading')) return;
 
     this.menuBtn.classList.remove('is-loading');
-    this.settingsMenuBtnTooltipText.textContent = 'Ambient light settings';
+    if (this.settingsMenuBtnTooltipText) {
+      this.settingsMenuBtnTooltipText.textContent = 'Ambient light settings';
+    }
 
     this.showUpdatesMessage();
   };
@@ -2163,6 +2168,7 @@ But if this happens frequently, here are some possible causes:
     this.warningItemElem.style.display = message ? '' : 'none';
     this.warningElem.textContent = message;
     this.warningType = type;
+    if (!this.menuBtn) return;
     this.menuBtn.classList.toggle('has-warning', icon && !!message);
     this.scrollToWarningQueued = !!message;
     if (!message) return;
