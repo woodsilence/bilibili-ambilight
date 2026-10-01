@@ -222,6 +222,13 @@ But if this happens frequently, here are some possible causes:
 
       this.saveStorageEntry('surroundingContentImagesTransparency', undefined);
     }
+
+    const enabledKey = storedSettings['setting-enabled-key'];
+    if (enabledKey === 'G' || enabledKey == null) {
+      this.saveStorageEntry('setting-enabled-key', 'L');
+      const enabledSetting = SettingsConfig.find((s) => s.name === 'enabled');
+      if (enabledSetting) enabledSetting.key = 'L';
+    }
   }
 
   handleWebGLCrash = async () => {

@@ -12,143 +12,307 @@
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <div class="logo-badge">
-          <svg class="glow-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-          </svg>
+        <div class="logo-wrapper">
+          <img src="images/logo.svg" alt="Bilibili Ambilight Logo" class="logo-img" />
         </div>
-        <div>
-          <h1 class="title">Bilibili Ambilight</h1>
+        <div class="header-text">
+          <div class="header-title-row">
+            <h1 class="title">Bilibili Ambilight</h1>
+            <span class="version-tag">v2.38</span>
+          </div>
           <p class="subtitle">哔哩哔哩流光溢彩</p>
         </div>
       </div>
       <div class="header-right">
-        <label class="switch" title="开启/关闭流光溢彩">
+        <label class="switch switch-lg" title="开启/关闭流光溢彩">
           <input type="checkbox" id="setting-enabled" checked />
           <span class="slider"></span>
         </label>
       </div>
     </header>
 
+    <!-- Hotkey Tip -->
     <div class="hotkey-tip">
-      <span>💡 播放页面支持快捷键 <strong>G</strong> 快速切换开/关</span>
+      <svg class="tip-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="12" height="10" rx="2"></rect>
+        <path d="M5 6.5h.01M8 6.5h.01M11 6.5h.01M5 9.5h6"></path>
+      </svg>
+      <span>播放中按快捷键 <kbd>L</kbd> 可快速开关流光溢彩</span>
     </div>
 
-    <!-- Main Settings Body -->
+    <!-- Segmented Tab Navigation -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="visuals">
+        <svg class="tab-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="3"></circle>
+          <line x1="8" y1="1.5" x2="8" y2="3"></line>
+          <line x1="8" y1="13" x2="8" y2="14.5"></line>
+          <line x1="1.5" y1="8" x2="3" y2="8"></line>
+          <line x1="13" y1="8" x2="14.5" y2="8"></line>
+          <line x1="3.4" y1="3.4" x2="4.5" y2="4.5"></line>
+          <line x1="11.5" y1="11.5" x2="12.6" y2="12.6"></line>
+          <line x1="3.4" y1="12.6" x2="4.5" y2="11.5"></line>
+          <line x1="11.5" y1="4.5" x2="12.6" y2="3.4"></line>
+        </svg>
+        <span>基础光效</span>
+      </button>
+      <button class="tab-btn" data-tab="performance">
+        <svg class="tab-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 1.5v9a1.5 1.5 0 0 0 1.5 1.5h9"></path>
+          <path d="M12 14.5v-9a1.5 1.5 0 0 0-1.5-1.5h-9"></path>
+        </svg>
+        <span>性能与裁剪</span>
+      </button>
+      <button class="tab-btn" data-tab="manage">
+        <svg class="tab-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="2.2"></circle>
+          <path d="M13.5 8a5.5 5.5 0 0 0-.08-.94l1.35-1.05-1.2-2.08-1.63.54a5.52 5.52 0 0 0-1.62-.94L10.08 1.8H7.92L7.68 3.53a5.52 5.52 0 0 0-1.62.94L4.43 3.93l-1.2 2.08 1.35 1.05A5.5 5.5 0 0 0 4.5 8c0 .32.03.63.08.94L3.23 9.99l1.2 2.08 1.63-.54c.48.38 1.03.7 1.62.94l.24 1.73h2.16l.24-1.73a5.52 5.52 0 0 0 1.62-.94l1.63.54 1.2-2.08-1.35-1.05c.05-.31.08-.62.08-.94z"></path>
+        </svg>
+        <span>配置与关于</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Panels -->
     <main class="content">
-      <!-- Section: Visuals -->
-      <section class="section">
-        <h2 class="section-title">
-          <span class="section-icon">✨</span> 基础光效
-        </h2>
-
-        <div class="control-group">
-          <div class="control-header">
-            <label for="setting-spread">扩散范围 (Spread)</label>
-            <span class="value-badge" id="val-spread">17%</span>
+      <!-- Panel 1: Visuals -->
+      <section class="tab-panel active" id="tab-visuals">
+        <div class="card">
+          <div class="control-group">
+            <div class="control-header">
+              <div class="label-box">
+                <label for="setting-spread">扩散范围 (Spread)</label>
+                <span class="control-desc">流光向画面四周延伸的广度</span>
+              </div>
+              <span class="value-badge" id="val-spread">17%</span>
+            </div>
+            <div class="slider-wrapper">
+              <input type="range" id="setting-spread" min="0" max="100" step="1" value="17" />
+            </div>
           </div>
-          <input type="range" id="setting-spread" min="0" max="100" step="1" value="17" />
-        </div>
 
-        <div class="control-group">
-          <div class="control-header">
-            <label for="setting-blur2">边缘模糊度 (Blur)</label>
-            <span class="value-badge" id="val-blur2">30%</span>
-          </div>
-          <input type="range" id="setting-blur2" min="0" max="100" step="1" value="30" />
-        </div>
+          <div class="control-divider"></div>
 
-        <div class="control-group">
-          <div class="control-header">
-            <label for="setting-brightness">画面亮度 (Brightness)</label>
-            <span class="value-badge" id="val-brightness">100%</span>
+          <div class="control-group">
+            <div class="control-header">
+              <div class="label-box">
+                <label for="setting-blur2">边缘模糊度 (Blur)</label>
+                <span class="control-desc">流光边缘柔化与渐隐程度</span>
+              </div>
+              <span class="value-badge" id="val-blur2">30%</span>
+            </div>
+            <div class="slider-wrapper">
+              <input type="range" id="setting-blur2" min="0" max="100" step="1" value="30" />
+            </div>
           </div>
-          <input type="range" id="setting-brightness" min="50" max="200" step="1" value="100" />
-        </div>
 
-        <div class="control-group">
-          <div class="control-header">
-            <label for="setting-contrast">对比度 (Contrast)</label>
-            <span class="value-badge" id="val-contrast">100%</span>
-          </div>
-          <input type="range" id="setting-contrast" min="50" max="200" step="1" value="100" />
-        </div>
+          <div class="control-divider"></div>
 
-        <div class="control-group">
-          <div class="control-header">
-            <label for="setting-saturation">饱和度 (Saturation)</label>
-            <span class="value-badge" id="val-saturation">100%</span>
+          <div class="control-group">
+            <div class="control-header">
+              <div class="label-box">
+                <label for="setting-brightness">发光亮度 (Brightness)</label>
+                <span class="control-desc">整体流光光晕的亮度倍率</span>
+              </div>
+              <span class="value-badge" id="val-brightness">100%</span>
+            </div>
+            <div class="slider-wrapper">
+              <input type="range" id="setting-brightness" min="50" max="200" step="1" value="100" />
+            </div>
           </div>
-          <input type="range" id="setting-saturation" min="50" max="200" step="1" value="100" />
-        </div>
 
-        <div class="control-group">
-          <div class="control-header">
-            <label for="setting-vibrance">色彩鲜艳度 (Vibrance)</label>
-            <span class="value-badge" id="val-vibrance">100%</span>
+          <div class="control-divider"></div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <div class="label-box">
+                <label for="setting-contrast">明暗对比度 (Contrast)</label>
+                <span class="control-desc">强化强光与暗部区域层次</span>
+              </div>
+              <span class="value-badge" id="val-contrast">100%</span>
+            </div>
+            <div class="slider-wrapper">
+              <input type="range" id="setting-contrast" min="50" max="200" step="1" value="100" />
+            </div>
           </div>
-          <input type="range" id="setting-vibrance" min="50" max="200" step="1" value="100" />
+
+          <div class="control-divider"></div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <div class="label-box">
+                <label for="setting-saturation">色彩饱和度 (Saturation)</label>
+                <span class="control-desc">溢彩色彩浓郁度</span>
+              </div>
+              <span class="value-badge" id="val-saturation">100%</span>
+            </div>
+            <div class="slider-wrapper">
+              <input type="range" id="setting-saturation" min="50" max="200" step="1" value="100" />
+            </div>
+          </div>
+
+          <div class="control-divider"></div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <div class="label-box">
+                <label for="setting-vibrance">色彩鲜艳度 (Vibrance)</label>
+                <span class="control-desc">动态提亮与丰富低饱和色彩</span>
+              </div>
+              <span class="value-badge" id="val-vibrance">100%</span>
+            </div>
+            <div class="slider-wrapper">
+              <input type="range" id="setting-vibrance" min="50" max="200" step="1" value="100" />
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- Section: Performance & Quality -->
-      <section class="section">
-        <h2 class="section-title">
-          <span class="section-icon">⚡</span> 性能与画质
-        </h2>
-
-        <div class="control-group-row">
-          <label for="setting-webGL">WebGL 硬件加速渲染</label>
-          <input type="checkbox" id="setting-webGL" checked />
-        </div>
-
-        <div class="control-group">
-          <div class="control-header">
-            <label for="setting-framerateLimit">最大帧率 (FPS)</label>
-            <span class="value-badge" id="val-framerateLimit">60 FPS</span>
+      <!-- Panel 2: Performance & Cropping -->
+      <section class="tab-panel" id="tab-performance">
+        <div class="card">
+          <div class="control-group-row">
+            <div class="row-label-group">
+              <label for="setting-webGL" class="row-label">WebGL 硬件加速渲染</label>
+              <span class="row-desc">调用 GPU 渲染着色器，获得极佳画质与极低 CPU 占用</span>
+            </div>
+            <label class="switch switch-md">
+              <input type="checkbox" id="setting-webGL" checked />
+              <span class="slider"></span>
+            </label>
           </div>
-          <select id="setting-framerateLimit" class="select-input">
-            <option value="30">30 FPS (省电模式)</option>
-            <option value="60" selected>60 FPS (流畅推荐)</option>
-            <option value="0">无限制 (最高同步刷新率)</option>
-          </select>
-        </div>
 
-        <div class="control-group">
-          <div class="control-header">
-            <label for="setting-resolution">渲染清晰度</label>
-            <span class="value-badge" id="val-resolution">100%</span>
+          <div class="control-divider"></div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <div class="label-box">
+                <label for="setting-framerateLimit">最大刷新帧率</label>
+                <span class="control-desc">光效采样的最高每秒帧率</span>
+              </div>
+              <span class="value-badge" id="val-framerateLimit">60 FPS</span>
+            </div>
+            <div class="select-wrapper">
+              <select id="setting-framerateLimit" class="select-input">
+                <option value="30">30 FPS (节能省电)</option>
+                <option value="60" selected>60 FPS (流畅平衡)</option>
+                <option value="0">无限制 (超高刷新率同步)</option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 6 8 10 12 6"></polyline>
+              </svg>
+            </div>
           </div>
-          <select id="setting-resolution" class="select-input">
-            <option value="50">50% (低开销)</option>
-            <option value="100" selected>100% (标准)</option>
-            <option value="200">200% (高清细腻)</option>
-          </select>
-        </div>
 
-        <div class="control-group-row">
-          <label for="setting-detectHorizontalBarSizeEnabled">自动检测上下黑边并裁剪</label>
-          <input type="checkbox" id="setting-detectHorizontalBarSizeEnabled" checked />
-        </div>
+          <div class="control-divider"></div>
 
-        <div class="control-group-row">
-          <label for="setting-detectVerticalBarSizeEnabled">自动检测左右黑边并裁剪</label>
-          <input type="checkbox" id="setting-detectVerticalBarSizeEnabled" checked />
+          <div class="control-group">
+            <div class="control-header">
+              <div class="label-box">
+                <label for="setting-resolution">渲染清晰度</label>
+                <span class="control-desc">光效计算的分辨率精度</span>
+              </div>
+              <span class="value-badge" id="val-resolution">100%</span>
+            </div>
+            <div class="select-wrapper">
+              <select id="setting-resolution" class="select-input">
+                <option value="50">50% (低开销)</option>
+                <option value="100" selected>100% (标准推荐)</option>
+                <option value="200">200% (高清细腻)</option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 6 8 10 12 6"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <div class="control-divider"></div>
+
+          <div class="control-group-row">
+            <div class="row-label-group">
+              <label for="setting-detectHorizontalBarSizeEnabled" class="row-label">自动上下黑边裁剪</label>
+              <span class="row-desc">自动检测 21:9 或宽屏电影视频上下黑边，防止光效采样黑边</span>
+            </div>
+            <label class="switch switch-md">
+              <input type="checkbox" id="setting-detectHorizontalBarSizeEnabled" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="control-divider"></div>
+
+          <div class="control-group-row">
+            <div class="row-label-group">
+              <label for="setting-detectVerticalBarSizeEnabled" class="row-label">自动左右黑边裁剪</label>
+              <span class="row-desc">自动检测 4:3 或竖屏短视频左右黑边</span>
+            </div>
+            <label class="switch switch-md">
+              <input type="checkbox" id="setting-detectVerticalBarSizeEnabled" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
       </section>
 
-      <!-- Actions -->
-      <section class="section action-section">
-        <button id="resetDefaultsBtn" class="btn btn-secondary">恢复默认设置</button>
-        <button id="exportSettingsBtn" class="btn btn-primary">导出配置</button>
-        <button id="importSettingsBtn" class="btn btn-secondary">导入配置</button>
-        <input type="file" id="importFileInput" accept=".json" hidden />
+      <!-- Panel 3: Management & About -->
+      <section class="tab-panel" id="tab-manage">
+        <div class="card action-card">
+          <div class="card-header">
+            <h3 class="card-title">配置备份与管理</h3>
+          </div>
+          <div class="btn-grid">
+            <button id="exportSettingsBtn" class="btn btn-secondary">
+              <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 2.5v7.5m0 0l-2.5-2.5m2.5 2.5l2.5-2.5"></path>
+                <path d="M2.5 10.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2"></path>
+              </svg>
+              <span>导出当前配置</span>
+            </button>
+            <button id="importSettingsBtn" class="btn btn-secondary">
+              <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 10V2.5m0 0L5.5 5m2.5-2.5L10.5 5"></path>
+                <path d="M2.5 10.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2"></path>
+              </svg>
+              <span>导入配置文件</span>
+            </button>
+            <button id="resetDefaultsBtn" class="btn btn-danger btn-full">
+              <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2.5 7.5A5.5 5.5 0 1 1 4.1 11.4"></path>
+                <path d="M2.5 3.5v4h4"></path>
+              </svg>
+              <span>恢复默认预设设置</span>
+            </button>
+            <input type="file" id="importFileInput" accept=".json" hidden />
+          </div>
+        </div>
+
+        <div class="card info-card">
+          <div class="card-header">
+            <h3 class="card-title">关于扩展</h3>
+          </div>
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-label">扩展名称</span>
+              <span class="info-value">Bilibili Ambilight</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">当前版本</span>
+              <span class="info-value">v2.38</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">支持平台</span>
+              <span class="info-value">哔哩哔哩 (bilibili.com)</span>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
 
+    <!-- Toast Feedback Notification -->
+    <div id="toast" class="toast"></div>
+
     <!-- Footer -->
     <footer class="footer">
-      <span>Bilibili Ambilight v2.38</span>
+      <span>沉浸式视听 · 流光溢彩</span>
     </footer>
   </div>
 

@@ -212,9 +212,8 @@ export default class Ambientlight {
       videoElem.closest('.html5-video-container') ||
       videoElem.parentElement;
 
-    this.settingsMenuBtnParent = this.videoPlayerElem.querySelector(
-      '.bpx-player-control-bottom-right, .ytp-right-controls, .ytp-chrome-controls > *:last-child'
-    );
+    // Do not inject the AL button into the Bilibili player controls
+    this.settingsMenuBtnParent = null;
 
     this.initVideoElem(videoElem, false);
   }

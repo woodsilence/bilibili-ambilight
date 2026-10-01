@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <rect width="128" height="128" rx="28" fill="#13151B"/>
+  <rect x="0.5" y="0.5" width="127" height="127" rx="27.5" stroke="white" stroke-opacity="0.08"/>
+  <!-- Ambilight Aura Left & Right -->
+  <path d="M18 46C13.5 56 13.5 72 18 82" stroke="#00AEEC" stroke-width="5" stroke-linecap="round" stroke-opacity="0.85"/>
+  <path d="M110 46C114.5 56 114.5 72 110 82" stroke="#00AEEC" stroke-width="5" stroke-linecap="round" stroke-opacity="0.85"/>
+  <!-- TV Antenna -->
+  <path d="M48 38L37 25M80 38L91 25" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
+  <!-- TV Body -->
+  <rect x="28" y="36" width="72" height="55" rx="14" fill="#1C1F28" stroke="#FFFFFF" stroke-width="5.5"/>
+  <!-- Face -->
+  <circle cx="51" cy="60" r="4.2" fill="#00AEEC"/>
+  <circle cx="77" cy="60" r="4.2" fill="#00AEEC"/>
+  <path d="M59 66C61.5 69.5 66.5 69.5 69 66" stroke="#00AEEC" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Feet -->
+  <path d="M46 91L40 100M82 91L88 100" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+</svg>

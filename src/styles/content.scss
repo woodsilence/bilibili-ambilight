@@ -3454,9 +3454,14 @@ html[data-ambientlight-related-scrollbar] {
    ========================================================================== */
 
 html[data-ambientlight-enabled] {
+  overflow-x: hidden;
+  overflow-x: clip;
+
   body {
     position: relative;
     min-height: 100vh;
+    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   #app {
@@ -3502,18 +3507,22 @@ html[data-ambientlight-enabled] {
     top: 0;
     left: 0;
     width: 100%;
+    max-width: 100%;
     min-width: 100%;
     height: 100%;
     min-height: 100%;
     pointer-events: none;
     z-index: 0;
-    overflow: visible;
+    overflow-x: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
 
     .ambientlight__container {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
+      max-width: 100%;
       min-width: 100%;
       height: 100%;
       min-height: 100%;
@@ -3529,6 +3538,7 @@ html[data-ambientlight-enabled] {
       top: 0;
       left: 0;
       width: 100%;
+      max-width: 100%;
       min-width: 100%;
       height: 100%;
       min-height: 100%;
@@ -3559,5 +3569,11 @@ html[data-ambientlight-enabled] {
     .bpx-player-primary-area {
       z-index: 1;
     }
+  }
+
+  /* Completely remove the AL button from the playback control bar */
+  .ytp-ambientlight-settings-button,
+  .ytp-ambientlight-settings-button-tooltip {
+    display: none !important;
   }
 }
