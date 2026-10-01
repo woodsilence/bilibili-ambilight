@@ -5,3 +5,5 @@
 /sourcemaps
 .env.local
 /scratch
+*.crx
+*.pem
