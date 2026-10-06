@@ -1,22 +1,3 @@
-const getOS = () => {
-  try {
-    const list = [
-      { match: 'window', name: 'Windows' },
-      { match: 'mac', name: 'Mac' },
-      { match: 'cros', name: 'Chrome+OS' },
-      { match: 'ubuntu', name: 'Ubuntu+(Linux)' },
-      { match: 'android', name: 'Android' },
-      { match: 'ios', name: 'iOS' },
-      { match: 'x11', name: 'Linux' },
-    ];
-    const ua = globalThis.navigator.userAgent;
-    const os = list.find((os) => ua.toLowerCase().indexOf(os.match) >= 0);
-    return os ? os.name : '';
-  } catch {
-    return null;
-  }
-};
-
 const browsersUAList = [
   { ua: 'Firefox', name: 'Firefox' },
   { ua: 'OPR', name: 'Opera' },
@@ -36,20 +17,6 @@ export const getBrowser = () => {
   }
 };
 
-const getBrowserVersion = () => {
-  try {
-    const browserName = getBrowser();
-    const browserUA = browsersUAList.find(
-      (browser) => browserName === browser.name
-    ).ua;
-    const ua = globalThis.navigator.userAgent;
-    const matches = ua.match(`${browserUA}/([0-9.]+)`);
-    return matches.length === 2 ? matches[1] : ua;
-  } catch {
-    return null;
-  }
-};
-
 export const getVersion = () => {
   try {
     return (chrome.runtime.getManifest() || {}).version;
@@ -58,12 +25,8 @@ export const getVersion = () => {
   }
 };
 
-export const getFeedbackFormLink = (version) => {
-  version = version || getVersion() || '';
-  const os = getOS() || '';
-  const browser = getBrowser() || '';
-  const browserVersion = getBrowserVersion();
-  return `https://docs.google.com/forms/d/e/1FAIpQLSe5lenJCbDFgJKwYuK_7U_s5wN3D78CEP5LYf2lghWwoE9IyA/viewform?usp=pp_url&entry.1590539866=${version}&entry.1676661118=${os}&entry.964326861=${browser}&entry.908541589=${browserVersion}`;
+export const getFeedbackFormLink = () => {
+  return 'https://github.com/woodsilence/bilibili-ambilight/issues';
 };
 
 export const getPrivacyPolicyLink = () => {

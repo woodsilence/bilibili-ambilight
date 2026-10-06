@@ -38,11 +38,6 @@ const getElem = (() => {
 
 function updateTheme(toDark) {
   document.documentElement.toggleAttribute('dark', toDark);
-
-  const ytdAppElem = getElem('ytd-app');
-  if (ytdAppElem?.setMastheadTheme) {
-    ytdAppElem.setMastheadTheme();
-  }
 }
 
 contentScript.addMessageListener(
@@ -72,12 +67,6 @@ const updateImmersiveMode = function updateImmersiveMode(
     window.scrollTo(scroll.x, (scroll.y += shift));
   }
 
-  const ytdApp = getElem('ytd-app');
-  if (ytdApp?.mastheadHeight) {
-    ytdApp.mastheadHeight += shift;
-    ytdApp.updateMastheadCssHeight?.();
-  }
-
   if (!skipVideoPlayerSetSize && enabled !== enable) videoPlayerSetSize();
 };
 
@@ -86,33 +75,6 @@ contentScript.addMessageListener(
   function onUpdateImmersiveMode(enable) {
     updateImmersiveMode(enable);
     contentScript.postMessage('update-immersive-mode');
-  }
-);
-
-contentScript.addMessageListener(
-  'set-live-chat-theme',
-  function seLiveChatTheme(toDark) {
-    const liveChatElem = getElem('live-chat');
-    if (!liveChatElem) return;
-
-    liveChatElem.postToContentWindow({
-      'yt-live-chat-set-dark-theme': toDark,
-    });
-  }
-);
-
-contentScript.addMessageListener('is-hdr-video', function isHdrVideo() {
-  const videoPlayerElem = getElem('video-player');
-  const isHdr = videoPlayerElem?.getVideoData?.()?.isHdr ?? false;
-  contentScript.postMessage('is-hdr-video', isHdr);
-});
-
-contentScript.addMessageListener(
-  'player-storyboard-format',
-  function playerStoryboardSpec() {
-    const player = getElem('video-player');
-    const format = player?.getStoryboardFormat?.();
-    contentScript.postMessage('player-storyboard-format', format);
   }
 );
 
@@ -141,32 +103,6 @@ contentScript.addMessageListener(
   }
 );
 
-let vrVideoCtx;
-let vrVideoCtxDrawArrays;
-const drawVR = (...args) => {
-  const result = vrVideoCtxDrawArrays.bind(vrVideoCtx)(...args);
-  contentScript.postMessage('next-vr-frame');
-  return result;
-};
-
-contentScript.addMessageListener('init-vr-video', function initVrVideo() {
-  const vrVideoElem = getElem('vr-video');
-  vrVideoCtx = vrVideoElem.getContext('webgl');
-  if (vrVideoCtx) {
-    if (vrVideoCtx.drawArrays !== drawVR) {
-      vrVideoCtxDrawArrays = vrVideoCtx.drawArrays;
-      vrVideoCtx.drawArrays = drawVR;
-    }
-  }
-});
-
-contentScript.addMessageListener('dispose-vr-video', function disposeVrVideo() {
-  if (!vrVideoCtx) return;
-
-  vrVideoCtx.drawArrays = vrVideoCtxDrawArrays;
-  vrVideoCtx = undefined;
-});
-
 contentScript.addMessageListener(
   'show',
   function show({
@@ -180,21 +116,6 @@ contentScript.addMessageListener(
     if (mastheadElem) mastheadElem.classList.add('no-animation');
 
     const ytdAppElem = getElem('ytd-app');
-    // const playerTheaterContainerElem = getElem(
-    //   watchSelectors
-    //     .map((selector) => `${selector} #full-bleed-container`)
-    //     .join(', ')
-    // );
-
-    // Temporary backgrounds
-    // if (playerTheaterContainerElem) {
-    //   setStyleProperty(
-    //     playerTheaterContainerElem,
-    //     'background',
-    //     'none',
-    //     'important'
-    //   );
-    // }
     if (ytdAppElem)
       setStyleProperty(
         ytdAppElem,
@@ -212,16 +133,10 @@ contentScript.addMessageListener(
 
     updateTheme(toDark);
 
-    // await new Promise((resolve) => raf(resolve));
-    // // eslint-disable-next-line no-unused-vars
-    // const _1 = videoElem.clientWidth;
     html.toggleAttribute('data-ambientlight-enabled', true);
 
     videoPlayerSetSize();
 
-    // Restore default backgrounds
-    // if (playerTheaterContainerElem)
-    //   playerTheaterContainerElem.style.background = '';
     if (ytdAppElem) ytdAppElem.style.background = '';
 
     if (mastheadElem) mastheadElem.classList.remove('no-animation');
@@ -248,28 +163,6 @@ contentScript.addMessageListener('hide', function hide({ toDark }) {
   if (mastheadElem) mastheadElem.classList.remove('no-animation');
   contentScript.postMessage('hide');
 });
-
-contentScript.addMessageListener(
-  'video-player-update-video-data-keywords',
-  function videoPlayerUpdateVideoDataKeywords(keywords) {
-    const videoPlayerElem = getElem('video-player');
-    if (!videoPlayerElem) return;
-
-    videoPlayerElem.updateVideoData({ keywords });
-  }
-);
-
-contentScript.addMessageListener(
-  'video-player-reload-video-by-id',
-  function videoPlayerReloadVideoById() {
-    const videoPlayerElem = getElem('video-player');
-    if (videoPlayerElem) {
-      const id = videoPlayerElem.getVideoData()?.video_id;
-      if (id) videoPlayerElem.loadVideoById(id); // Refreshes auto quality setting range above 480p
-    }
-    contentScript.postMessage('video-player-reload-video-by-id');
-  }
-);
 
 let videoObserver;
 let videoObserverElem;

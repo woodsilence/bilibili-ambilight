@@ -1,13 +1,10 @@
-import { copyFileSync, mkdirSync, existsSync } from 'fs';
-import { replaceInFileSync } from 'replace-in-file';
-import packageJson from './package.json' with { type: 'json' };
+import fs from 'fs';
 
-const options = {
-  files: 'dist/manifest.json',
-  from: /"version": "0.0.0"/g,
-  to: `"version": "${packageJson.version}"`,
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+const manifest = JSON.parse(fs.readFileSync('./src/manifest.json', 'utf8'));
+manifest.version = pkg.version || '0.0.1';
+
+if (!fs.existsSync('dist')) {
+  fs.mkdirSync('dist', { recursive: true });
 }
-
-if(!existsSync('dist')) mkdirSync('dist');
-copyFileSync('src/manifest.json', options.files);
-replaceInFileSync(options);
+fs.writeFileSync('dist/manifest.json', JSON.stringify(manifest, null, 2), 'utf8');

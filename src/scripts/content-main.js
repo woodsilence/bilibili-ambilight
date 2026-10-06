@@ -1,5 +1,4 @@
 import {
-  on,
   wrapErrorHandler,
   isWatchPageUrl,
   setErrorHandler,
@@ -94,8 +93,6 @@ const detectDetachedVideo = () => {
     subtree: true,
   });
 };
-
-
 
 const findVideoElem = () => {
   return (
@@ -199,8 +196,6 @@ const detectPageTransitions = (ytdAppElem) => {
       }
     }
   };
-
-  on(document, 'yt-navigate-finish', onPageTransition, undefined, true);
 
   // Bilibili SPA page transitions
   window.addEventListener('popstate', onPageTransition);

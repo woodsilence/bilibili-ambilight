@@ -1,21 +1,17 @@
 import { wrapErrorHandler } from '../generic';
-import { extensionId, isSameWindowMessage } from './utils';
+import { extensionId } from './utils';
 
 class ContentScript {
   globalListener;
   listeners = [];
 
   addMessageListener = (type, handler) => {
-    // console.log('content addMessageListener', type)
     if (!this.globalListener) {
-      // console.log('content addMessageListenerGlobal')
       this.globalListener = wrapErrorHandler(
         function contentScriptMessageListenerGlobal(event) {
           if (!event.detail || typeof event.detail !== 'string') return;
           const detail = JSON.parse(event.detail);
-          // console.log('received in injectedScript', event.detail?.type, event.detail?.contentScript, event, '|', event.detail?.injectedScript);
           if (
-            !isSameWindowMessage ||
             detail?.contentScript !== extensionId ||
             !detail?.type
           )

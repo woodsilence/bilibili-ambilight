@@ -14,7 +14,6 @@ import {
   isWatchPageUrl,
   watchSelectors,
   isEmbedPageUrl,
-  isNetworkError,
   VIEW_DISABLED,
   VIEW_DETACHED,
   VIEW_SMALL,
@@ -38,10 +37,6 @@ import Settings, {
 import Projector2d from './projector-2d';
 import ProjectorWebGL from './projector-webgl';
 import { WebGLOffscreenCanvas } from './canvas-webgl';
-import {
-  cancelGetAverageVideoFramesDifference,
-  getAverageVideoFramesDifference,
-} from './static-image-detection';
 import Theming from './theming';
 import Stats from './stats';
 import { getBrowser } from './utils';
@@ -489,40 +484,10 @@ export default class Ambientlight {
   }
 
   resetAverageVideoFramesDifference = () => {
-    cancelGetAverageVideoFramesDifference();
     this.averageVideoFramesDifference = 1;
-    this.settings.updateAverageVideoFramesDifferenceInfo();
-
-    if (this.chromiumBugVideoJitterWorkaround?.update)
-      this.chromiumBugVideoJitterWorkaround.update();
   };
 
-  calculateAverageVideoFramesDifference = async () => {
-    if (!this.settings.energySaver || !this.videoPlayerElem) return;
-
-    try {
-      const format = await injectedScript.postAndReceiveMessage(
-        'player-storyboard-format'
-      );
-      if (!format) return;
-
-      const difference = await getAverageVideoFramesDifference(format);
-      if (difference === undefined) return;
-
-      this.averageVideoFramesDifference = difference;
-      this.settings.updateAverageVideoFramesDifferenceInfo();
-
-      if (this.chromiumBugVideoJitterWorkaround?.update)
-        this.chromiumBugVideoJitterWorkaround.update();
-    } catch (ex) {
-      if (
-        !['InvalidStateError', 'SecurityError'].includes(ex?.name) &&
-        !isNetworkError(ex)
-      ) {
-        SentryReporter.captureException(ex);
-      }
-    }
-  };
+  calculateAverageVideoFramesDifference = async () => {};
 
   initVideoListeners() {
     ////// PLAYER FLOW
@@ -715,39 +680,6 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
     this.initVideoListeners();
     if (!this.videoElem.paused) {
       this.videoListeners.playing();
-    }
-  };
-
-  // Removes "yt:crop=16:9" & "yt-stretch=16:9" from the videoData.keywords array
-  // to prevent the video element from being scaled by YouTube in theater view
-  ytScalingBaseKeywords = ['yt:crop=', 'yt:stretch='];
-  updateKeywordsToPreventTheaterScaling = () => {
-    try {
-      let keywords =
-        document.head.querySelector('meta[name="keywords"]')?.content ?? '';
-      if (
-        !this.ytScalingBaseKeywords.some((baseKeyword) =>
-          keywords.includes(baseKeyword)
-        )
-      )
-        return;
-
-      keywords = keywords.split(', ');
-      if (this.settings.enabled) {
-        keywords = keywords.filter(
-          (keyword) =>
-            !this.ytScalingBaseKeywords.some((baseKeyword) =>
-              keyword.startsWith(baseKeyword)
-            )
-        );
-      }
-      keywords = keywords.join(',');
-      injectedScript.postMessage(
-        'video-player-update-video-data-keywords',
-        keywords
-      );
-    } catch (ex) {
-      SentryReporter.captureException(ex);
     }
   };
 
@@ -1172,7 +1104,7 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
     this.settings.displayBezelForSetting('enabled');
   }
 
-  async checkGetImageDataAllowed() {
+  checkGetImageDataAllowed() {
     const isSameOriginVideo =
       !!this.videoElem.src &&
       this.videoElem.src.indexOf(location.origin) !== -1;
@@ -1193,15 +1125,7 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
       this.crossOriginApplied = true;
 
       try {
-        const currentTime = this.videoElem.currentTime;
         this.videoElem.crossOrigin = 'use-credentials';
-
-        // Refresh auto quality setting range above 480p
-        await injectedScript.postAndReceiveMessage(
-          'video-player-reload-video-by-id'
-        );
-
-        this.videoElem.currentTime = currentTime;
       } catch {
         console.warn(
           `Detected cross origin video. Failed to apply workaround...  ${this.videoElem.src}, ${this.videoElem.crossOrigin}`
@@ -3611,70 +3535,9 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
     await this.start(initial);
   }
 
-  // async disableYouTubeAmbientMode() {
-  //   try {
-  //     if(
-  //       !ytcfg?.data_?.WEB_PLAYER_CONTEXT_CONFIGS.WEB_PLAYER_CONTEXT_CONFIG_ID_KEVLAR_WATCH?.cinematicSettingsAvailable ||
-  //       !ytcfg?.data_?.EXPERIMENT_FLAGS?.kevlar_watch_cinematics
-  //     ) return
-
-  //     const ambientModeIcon = 'path[d="M21 7v10H3V7h18m1-1H2v12h20V6zM11.5 2v3h1V2h-1zm1 17h-1v3h1v-3zM3.79 3 6 5.21l.71-.71L4.5 2.29 3.79 3zm2.92 16.5L6 18.79 3.79 21l.71.71 2.21-2.21zM19.5 2.29 17.29 4.5l.71.71L20.21 3l-.71-.71zm0 19.42.71-.71L18 18.79l-.71.71 2.21 2.21z"]'
-  //     let ambientModeCheckbox = document.querySelector(`.ytp-menuitem ${ambientModeIcon}`)?.closest('.ytp-menuitem')
-
-  //     if(ambientModeCheckbox) {
-  //       const enabled = ambientModeCheckbox.getAttribute('aria-checked') === 'true'
-  //       if(enabled) {
-  //         ambientModeCheckbox.click()
-  //       }
-  //       return
-  //     }
-
-  //     const settingsBtn = document.querySelector('.ytp-settings-button')
-  //     const settingsPopupId = settingsBtn?.getAttribute('aria-controls')
-  //     const settingsPopup = document.querySelector(`.ytp-popup[id="${settingsPopupId}"]`)
-  //     settingsPopup.classList.add('disable-youtube-ambient-mode-workaround')
-  //     await new Promise(resolve => raf(resolve)) // Await rendering
-  //     const wasActiveElement = document.activeElement
-  //     settingsBtn?.click() // Open settings
-
-  //     try {
-  //       await new Promise(resolve => raf(resolve)) // Await rendering
-  //       await waitForDomElement(() => document.querySelector(`.ytp-menuitem ${ambientModeIcon}`), document.querySelector('.html5-video-player'), 1000)
-  //       ambientModeCheckbox = document.querySelector(`.ytp-menuitem ${ambientModeIcon}`)?.closest('.ytp-menuitem')
-  //       if(ambientModeCheckbox) {
-  //         const enabled = ambientModeCheckbox.getAttribute('aria-checked') === 'true'
-  //         if(enabled) {
-  //           ambientModeCheckbox.click()
-  //         }
-  //       }
-  //     } catch(ex) {
-  //       console.log(`Skipped disabling YouTube\'s own Ambient Mode: ${ex?.message}`)
-  //     }
-
-  //     settingsBtn?.click() // Close settings
-  //     await new Promise(resolve => raf(resolve)) // Await rendering
-
-  //     if(document.activeElement == settingsBtn && wasActiveElement !== settingsBtn) {
-  //       if(wasActiveElement) {
-  //         wasActiveElement.focus()
-  //       } else {
-  //         settingsBtn.blur()
-  //       }
-  //     }
-
-  //     await new Promise(resolve => setTimeout(resolve, 500)) // Await close animation
-  //     await new Promise(resolve => raf(resolve)) // Await rendering
-  //     settingsPopup.classList.remove('disable-youtube-ambient-mode-workaround')
-  //   } catch(ex) {
-  //     console.log(`Failed to automatically disable YouTube\'s own Ambient Mode: ${ex?.message}`)
-  //   }
-  // }
-
   async disable() {
     if (this.pendingStart) return;
     this.settings.set('enabled', false, true);
-
-    this.updateKeywordsToPreventTheaterScaling();
 
     await this.hide();
   }
@@ -3693,7 +3556,6 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
 
     this.checkGetImageDataAllowed();
     await this.resetSettingsIfNeeded();
-    this.updateKeywordsToPreventTheaterScaling();
     await this.updateView(true);
 
     this.pendingStart = true;
@@ -3714,7 +3576,6 @@ Video ready state: ${readyStateToString(videoElem?.readyState)}`);
     // Prevent incorrect stats from showing
     this.lastUpdateStatsTime = performance.now() + this.updateStatsInterval;
     await this.nextFrame();
-    // this.disableYouTubeAmbientMode()
   };
 
   updateHdr = wrapErrorHandler(

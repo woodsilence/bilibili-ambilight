@@ -2,15 +2,6 @@ import fs from 'fs';
 import resolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
 import eslint from '@rollup/plugin-eslint';
-import dotenvx from '@dotenvx/dotenvx';
-dotenvx.config();
-dotenvx.config({
-  path: '.env.local',
-  override: true,
-  overload: true,
-});
-// import { sentryRollupPlugin } from '@sentry/rollup-plugin';
-// import packageJson from './package.json' with { type: 'json' };
 
 const common = {
   context: 'window',
@@ -36,28 +27,6 @@ const common = {
         ],
       ],
     }),
-    // sentryRollupPlugin({
-    //   bundleSizeOptimizations: {
-    //     excludeDebugStatements: true,
-    //     excludeReplayIframe: true,
-    //     excludeReplayShadowDom: true,
-    //     excludeReplayWorker: true,
-    //     excludeTracing: true,
-    //   },
-    //   release: {
-    //     name: packageJson.version,
-    //   },
-
-    //   sourcemaps: {
-    //     disable: true,
-    //   },
-    //   telemetry: false,
-
-    //   // org: 'wessel-kroos',
-    //   // project: '1524536',
-    //   // // Auth tokens can be obtained from https://sentry.io/orgredirect/organizations/:orgslug/settings/auth-tokens/
-    //   // authToken: process.env.SENTRY_AUTH_TOKEN,
-    // }),
   ],
 };
 
@@ -67,7 +36,6 @@ const scripts = [
   'content',
   'content-main',
   'injected',
-  'live-chat',
 ];
 
 export default scripts.map((script) =>

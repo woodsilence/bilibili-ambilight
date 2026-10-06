@@ -410,20 +410,6 @@ export const isEmbedPageUrl = () =>
   location.pathname?.startsWith('/player.html') ||
   location.hostname === 'player.bilibili.com';
 
-export const getCookie = async (name) =>
-  globalThis.cookieStore
-    ? await cookieStore.get(name)
-    : document.cookie
-        .split('; ')
-        .map((cookie) => {
-          const nameValue = cookie.split(/=(.*)/s);
-          return {
-            name: nameValue[0],
-            value: nameValue[1],
-          };
-        })
-        .find((cookie) => cookie.name === name);
-
 export const networkStateToString = (value) =>
   (({
     0: 'NETWORK_EMPTY',
@@ -480,9 +466,6 @@ export const watchSelectors = [
   '#playerWrap',
   '.video-container-v1',
   '.player-and-aside-area',
-  'ytd-watch-flexy',
-  'ytd-watch-fixie',
-  'ytd-watch-grid',
 ];
 
 let warningElem;
