@@ -682,7 +682,7 @@ Click on the questionmark for more and updated information about these artifacts
     type: 'list',
     default: 17,
     min: 0,
-    max: 400,
+    max: 500,
     step: 0.1,
   },
   {

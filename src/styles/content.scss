@@ -300,12 +300,25 @@ html[data-ambientlight-enabled] {
   .right-container,
   .right-container-v1,
   #comment,
+  #commentapp,
   bili-comments,
+  bili-comment-thread-renderer,
+  bili-comment-renderer,
+  .bili-comment-container,
   .comment-m,
   .comment-container,
   .reply-warp,
+  .reply-list,
   .recommend-list-v1,
-  .rec-list {
+  .rec-list,
+  .video-info-container,
+  .video-info-detail,
+  .video-toolbar-v1,
+  .video-toolbar-container,
+  .tag-panel-v1,
+  .video-tag-container,
+  .up-panel-container,
+  .up-info--right {
     position: relative;
     background-color: transparent !important;
   }
